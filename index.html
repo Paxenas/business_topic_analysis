@@ -1,626 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
 
-<h2 class="sr-only">Exam Topic Analysis Dashboard for Wirtschaft bilingual (FOS Hessen), analyzing 18 past papers from 2017–2025 across macro-economics, marketing, and business administration topics.</h2>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Topic Analysis — Wirtschaft Bilingual</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); }
-.dash { padding: 1.5rem 0; }
-.header { margin-bottom: 1.5rem; }
-.header h1 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
-.header p { font-size: 13px; color: var(--color-text-secondary); margin-top: 4px; }
-.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
-.metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; }
-.metric-label { font-size: 12px; color: var(--color-text-secondary); }
-.metric-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-top: 2px; }
-.section-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 1.5rem 0 0.75rem; border-bottom: 0.5px solid var(--color-border-tertiary); padding-bottom: 6px; }
-.badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: var(--border-radius-md); }
-.badge-high { background: #FCEBEB; color: #A32D2D; }
-.badge-med { background: #FAEEDA; color: #854F0B; }
-.badge-low { background: #EAF3DE; color: #3B6D11; }
-.topic-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; }
-.topic-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-.topic-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
-.topic-meta { display: flex; align-items: center; gap: 10px; }
-.freq { font-size: 12px; color: var(--color-text-secondary); }
-.bar-wrap { width: 80px; height: 6px; background: var(--color-border-tertiary); border-radius: 3px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 3px; }
-.bar-high { background: #E24B4A; }
-.bar-med { background: #EF9F27; }
-.bar-low { background: #639922; }
-.subtopics { margin-top: 12px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 10px; display: none; }
-.subtopics.open { display: block; }
-.sub-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
-.sub-row:last-child { border-bottom: none; }
-.sub-name { font-size: 13px; color: var(--color-text-secondary); }
-.sub-freq { font-size: 12px; color: var(--color-text-tertiary); }
-.chevron { font-size: 12px; color: var(--color-text-tertiary); transition: transform 0.2s; display: inline-block; }
-.chevron.open { transform: rotate(180deg); }
-.insight-box { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-top: 1.5rem; }
-.insight-box h3 { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 8px; }
-.insight-item { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; padding: 3px 0; }
-.tabs { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
-.tab { font-size: 12px; padding: 5px 12px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; color: var(--color-text-secondary); background: transparent; }
-.tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); font-weight: 500; border-color: var(--color-border-primary); }
-.panel { display: none; }
-.panel.active { display: block; }
-.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
-.chart-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
-.chart-box h3 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 10px; }
-</style>
+        :root {
+            --bg: #f5f4f0;
+            --surface: #ffffff;
+            --surface-2: #f0ede8;
+            --border: #e2ddd6;
+            --border-light: #ece9e3;
+            --text-primary: #1a1814;
+            --text-secondary: #5c574f;
+            --text-tertiary: #9a9288;
+            --accent-red: #c0392b;
+            --accent-amber: #b7600a;
+            --accent-green: #3a6b12;
+            --badge-red-bg: #fdf0ef;
+            --badge-red-text: #a32d2d;
+            --badge-amber-bg: #fdf3e3;
+            --badge-amber-text: #854f0b;
+            --badge-green-bg: #eef4e5;
+            --badge-green-text: #3b6d11;
+            --bar-red: #e24b4a;
+            --bar-amber: #ef9f27;
+            --bar-green: #639922;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
 
-<div class="dash">
-  <div class="header">
-    <h1>Exam topic analysis dashboard</h1>
-    <p>Fachoberschule Wirtschaft bilingual (HMKB/Hessen) — 18 past papers, 2017–2025</p>
-  </div>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #141210;
+                --surface: #1e1c18;
+                --surface-2: #252220;
+                --border: #2e2b26;
+                --border-light: #272420;
+                --text-primary: #f0ece5;
+                --text-secondary: #a89f94;
+                --text-tertiary: #6b6258;
+                --badge-red-bg: #2a1414;
+                --badge-red-text: #e88080;
+                --badge-amber-bg: #241a0a;
+                --badge-amber-text: #d4954a;
+                --badge-green-bg: #121c06;
+                --badge-green-text: #7db83a;
+                --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+                --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            }
+        }
 
-  <div class="metrics">
-    <div class="metric"><div class="metric-label">Papers analyzed</div><div class="metric-value">18</div></div>
-    <div class="metric"><div class="metric-label">Years covered</div><div class="metric-value">2017–25</div></div>
-    <div class="metric"><div class="metric-label">Topics identified</div><div class="metric-value">24</div></div>
-    <div class="metric"><div class="metric-label">High-priority topics</div><div class="metric-value">8</div></div>
-  </div>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  <div class="tabs">
-    <button class="tab active" onclick="showPanel('all')">All topics</button>
-    <button class="tab" onclick="showPanel('eng')">English section (VWL)</button>
-    <button class="tab" onclick="showPanel('mkt')">Marketing</button>
-    <button class="tab" onclick="showPanel('de')">German section</button>
-  </div>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
 
-  <div id="panel-all" class="panel active">
-    <div class="chart-row">
-      <div class="chart-box">
-        <h3>Topic frequency (all years)</h3>
-        <div style="position:relative;height:220px;"><canvas id="freqChart" role="img" aria-label="Bar chart of topic frequency across all exam papers">Marketing: 13, Inflation/Prices: 12, Unemployment: 10, ECB/Monetary Policy: 9, GDP/Growth: 8, Fiscal Policy: 8, Price Elasticity: 5, Business Cycle: 4.</canvas></div>
-      </div>
-      <div class="chart-box">
-        <h3>Section split</h3>
-        <div style="position:relative;height:220px;"><canvas id="splitChart" role="img" aria-label="Pie chart showing exam section distribution">English VWL: 40%, Marketing: 35%, German Business Admin: 25%.</canvas></div>
-      </div>
-    </div>
-    <p class="section-title">All topics — ranked by importance</p>
+        .page-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Marketing mix &amp; strategy <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">13 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:100%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">4 Ps / marketing mix concept</span><span class="sub-freq">9 papers</span></div>
-        <div class="sub-row"><span class="sub-name">BCG portfolio matrix</span><span class="sub-freq">7 papers</span></div>
-        <div class="sub-row"><span class="sub-name">ANSOFF growth matrix</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Market segmentation</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Branding strategy</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">SWOT / PESTLE analysis</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Porter's competitive strategies</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Product life cycle (PLC)</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Price differentiation strategies</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Distribution channels</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Market research (primary vs secondary)</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">USP / unique selling proposition</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Above-the-line / below-the-line promotion</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
+        /* ─── HEADER ─── */
+        .header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Inflation &amp; price stability <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">12 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:92%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Definition &amp; types of inflation</span><span class="sub-freq">9 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Consequences for debtors, creditors, consumers</span><span class="sub-freq">7 papers</span></div>
-        <div class="sub-row"><span class="sub-name">CPI / HCPI / inflation measurement</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Causes of inflation (energy, supply chain)</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Deflation &amp; its effects</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Wage-price spiral / purchasing power</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
+        .header-eyebrow {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-bottom: 0.5rem;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Unemployment <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">10 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:77%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Unemployment rate calculation</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Types &amp; causes of unemployment</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Government measures to fight unemployment</span><span class="sub-freq">7 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Kurzarbeit / short-time work schemes</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Costs of unemployment (economic + social)</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Comparing countries (Germany vs US)</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
+        .header h1 {
+            font-size: clamp(20px, 4vw, 28px);
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> ECB &amp; monetary policy <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">9 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:69%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">ECB tasks &amp; role</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Interest rate policy (raising/lowering)</span><span class="sub-freq">7 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Consequences of low interest rates</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Quantitative easing / bond purchases</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Monetary policy → price stability mechanism</span><span class="sub-freq">4 papers</span></div>
-      </div>
-    </div>
+        .header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-weight: 400;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> GDP &amp; economic growth <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">8 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:62%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">GDP definition &amp; calculation</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">GDP as welfare measure — limitations</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Nominal vs real GDP</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Human Development Index (HDI)</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Lorenz curve &amp; income distribution</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
+        /* ─── METRICS ─── */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Fiscal policy <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">8 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:62%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Demand-oriented fiscal policy (Keynesian)</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Supply-oriented fiscal policy</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Deficit spending &amp; debt</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Fiscal policy instruments (tax, spending)</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Limits &amp; critique of fiscal policy</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
+        @media (max-width: 600px) {
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Magic hexagon / economic goals <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">7 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:54%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Naming the 6 goals</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Goal conflicts (e.g. growth vs environment)</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Goal harmonies</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Target values for each goal</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
+        .metric {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Price elasticity of demand <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">5 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:38%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">PED formula &amp; calculation</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Interpretation of PED result</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Factors determining PED</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Elastic vs inelastic goods (examples)</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
+        .metric-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Causal chains (Wirkungsketten) <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">8 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:62%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">4-step causal chain on Keynesian demand</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Oil price effects</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Tax change effects on economy</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Interest rate → growth chain</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Deflation spiral</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
+        .metric-value {
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 4px;
+            letter-spacing: -0.03em;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Procurement &amp; stock management <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">5 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:38%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Optimal order quantity (Andler formula)</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Order point procedure (Bestellpunkt)</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Order rhythm procedure (Bestellrhythmus)</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Just-in-time procurement</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">ABC analysis</span><span class="sub-freq">1 paper</span></div>
-        <div class="sub-row"><span class="sub-name">Make-or-buy decisions</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Storage costs, stock levels, reorder point</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
+        /* ─── TABS ─── */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Bookkeeping &amp; accounting <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">5 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:38%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Journal entries (Grundbuch)</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Depreciation (linear, time-based, usage-based)</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Acquisition cost (Anschaffungskosten)</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">VAT / Umsatzsteuer entries</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Inventory changes (Bestandsveränderungen)</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Private withdrawals (Privatentnahmen)</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Returns &amp; purchase discounts</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
+        .tab {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 7px 16px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            background: transparent;
+            transition: all 0.15s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Business financing <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">5 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:38%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Loan types (annuity, maturity, instalment)</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Equity vs debt financing</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Balance sheet analysis</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
+        .tab:hover {
+            background: var(--surface);
+            color: var(--text-primary);
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Oil prices &amp; commodity markets <span class="badge badge-low">Lower</span></div>
-        <div class="topic-meta"><span class="freq">3 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-low" style="width:23%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Effects on importing vs exporting countries</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Supply &amp; demand in oil markets</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Link to unemployment &amp; growth</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
+        .tab.active {
+            background: var(--text-primary);
+            color: var(--bg);
+            border-color: var(--text-primary);
+            font-weight: 600;
+        }
 
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Income distribution &amp; justice <span class="badge badge-low">Lower</span></div>
-        <div class="topic-meta"><span class="freq">2 / 18 papers</span><div class="bar-wrap"><div class="bar-fill bar-low" style="width:15%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Lorenz curve interpretation</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Redistribution measures</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Progressive taxation</span><span class="sub-freq">1 paper</span></div>
-      </div>
-    </div>
+        /* ─── PANEL ─── */
+        .panel {
+            display: none;
+        }
 
-    <div class="insight-box">
-      <h3>Key insights &amp; exam preparation tips</h3>
-      <div class="insight-item">▸ Marketing is the single most tested area — every paper with a marketing focus (roughly half of all papers) tests BCG matrix, ANSOFF, or market segmentation. Expect at least one of these.</div>
-      <div class="insight-item">▸ Inflation + ECB is essentially guaranteed every year in the macroeconomics section. Know CPI, causes, consequences, and the ECB's 3-step transmission mechanism cold.</div>
-      <div class="insight-item">▸ Causal chains appear in almost every macro paper — practice writing them fluently in 4 steps with arrows.</div>
-      <div class="insight-item">▸ The magic hexagon replaced the "magic square" from 2022 onward — always use the 6-goal version (adding environmental protection and fair distribution).</div>
-      <div class="insight-item">▸ Since 2024, the German section reliably covers procurement (Beschaffung) and bookkeeping — expect the Andler formula and depreciation calculations.</div>
-      <div class="insight-item">▸ Price elasticity appears every year it is in the English section. Always calculate AND interpret the result — both parts are marked.</div>
-    </div>
-  </div>
+        .panel.active {
+            display: block;
+        }
 
-  <div id="panel-eng" class="panel">
-    <p class="section-title">English section (VWL / macroeconomics)</p>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Inflation / price stability <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">12 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:100%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Definition, types, causes</span><span class="sub-freq">9 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Consequences for economic actors</span><span class="sub-freq">8 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Measurement (CPI/HCPI calculations)</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Deflation concept &amp; causal chain</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> ECB &amp; monetary policy <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">9 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:75%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">ECB tasks (price stability, key rate)</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Consequences of low/high interest rates</span><span class="sub-freq">7 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Monetary transmission mechanism</span><span class="sub-freq">4 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Unemployment <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">9 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:75%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Rate calculation + critique</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Measures against unemployment</span><span class="sub-freq">7 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Types &amp; causes</span><span class="sub-freq">5 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Magic hexagon <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">7 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:58%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Naming all 6 goals</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Conflicts and harmonies</span><span class="sub-freq">6 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> GDP &amp; welfare measurement <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">7 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:58%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">GDP definition &amp; limits</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">HDI / alternative measures</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Fiscal policy <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">7 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:58%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Demand-oriented Keynesian policy</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Supply-side policy</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Limits of fiscal policy</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Deficit spending</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Price elasticity of demand <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">5 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:42%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Calculation</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Interpretation &amp; illustration</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Determinants of PED</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Income &amp; wealth distribution <span class="badge badge-low">Lower</span></div>
-        <div class="topic-meta"><span class="freq">2 papers</span><div class="bar-wrap"><div class="bar-fill bar-low" style="width:17%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Lorenz curve concept &amp; reading</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Redistribution measures</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
-  </div>
+        /* ─── CHART ROW ─── */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
 
-  <div id="panel-mkt" class="panel">
-    <p class="section-title">Marketing section (English)</p>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Marketing mix (4 Ps) <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">9 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:100%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Explain the 4 Ps concept</span><span class="sub-freq">7 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Apply to a given company from text</span><span class="sub-freq">8 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Promotion policy (ATL / BTL)</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Pricing strategies (skimming, penetration)</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Distribution channels (direct, indirect, online)</span><span class="sub-freq">4 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> BCG portfolio matrix <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">7 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:78%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Sketch &amp; label the matrix</span><span class="sub-freq">6 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Classify product from text (star/dog/etc.)</span><span class="sub-freq">7 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Weaknesses of the model</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Relative market share calculation</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> ANSOFF matrix <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">6 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:67%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Describe all 4 strategies</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Suggest strategy for a given firm</span><span class="sub-freq">5 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Market segmentation <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">6 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:67%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Illustrate the concept</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Types of segmentation (demographic, psychographic…)</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Apply to given case</span><span class="sub-freq">5 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Market research <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">6 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:67%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Primary vs secondary research (contrast)</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Qualitative vs quantitative research</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Advantages &amp; disadvantages of each</span><span class="sub-freq">5 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Suggest method for given scenario</span><span class="sub-freq">4 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Branding <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">5 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:56%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Purpose of branding</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Multi-brand strategy</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Advantage / disadvantage of strategy</span><span class="sub-freq">4 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Porter's competitive strategies <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">4 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:44%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Describe 3 strategies (cost leadership, differentiation, focus)</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Identify strategy used in text</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Product life cycle <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">3 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:33%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Chart turnover &amp; identify PLC stage</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Weaknesses of PLC model</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Measures to extend PLC</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> SWOT / PESTLE analysis <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">3 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:33%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">SWOT findings from a text</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">PESTLE factor examples</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Strategy from SWOT results</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
-  </div>
+        @media (max-width: 600px) {
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+        }
 
-  <div id="panel-de" class="panel">
-    <p class="section-title">German section (Buchführung, Beschaffung)</p>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Depreciation (Abschreibungen) <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">4 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:100%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Linear (zeitanteilig) depreciation calculation</span><span class="sub-freq">4 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Usage-based (leistungsbezogen) depreciation</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Acquisition cost (Anschaffungskosten) determination</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Journal entries for depreciation</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Procurement (Beschaffung) <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">4 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:100%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Optimal order quantity (Andler formula)</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Order point procedure — calculations</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Order rhythm procedure</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Supplier selection (qualitativer Angebotsvergleich)</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Just-in-time evaluation</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> VAT / Umsatzsteuer bookings <span class="badge badge-high">High</span></div>
-        <div class="topic-meta"><span class="freq">3 papers</span><div class="bar-wrap"><div class="bar-fill bar-high" style="width:75%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Zahllast vs Vorsteuerüberhang</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Journal entries for VAT settlement</span><span class="sub-freq">3 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Gross invoice calculations</span><span class="sub-freq">3 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Inventory changes (Bestandsveränderungen) <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">3 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:75%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Calculate change in EUR and book it</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Effect on profit &amp; loss (GuV)</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Loan &amp; financing calculations <span class="badge badge-med">Medium</span></div>
-        <div class="topic-meta"><span class="freq">3 papers</span><div class="bar-wrap"><div class="bar-fill bar-med" style="width:75%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Fälligkeitsdarlehen table</span><span class="sub-freq">2 papers</span></div>
-        <div class="sub-row"><span class="sub-name">Annuity loan calculations</span><span class="sub-freq">1 paper</span></div>
-        <div class="sub-row"><span class="sub-name">Wage cost tables (Lohnkostenarten)</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
-    <div class="topic-card">
-      <div class="topic-header" onclick="toggle(this)">
-        <div class="topic-name"><span class="chevron">▾</span> Private withdrawals / owner entries <span class="badge badge-low">Lower</span></div>
-        <div class="topic-meta"><span class="freq">2 papers</span><div class="bar-wrap"><div class="bar-fill bar-low" style="width:50%"></div></div></div>
-      </div>
-      <div class="subtopics">
-        <div class="sub-row"><span class="sub-name">Book Privatentnahme (goods or cash)</span><span class="sub-freq">2 papers</span></div>
-      </div>
-    </div>
-  </div>
-</div>
+        .chart-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script>
-function toggle(header) {
-  var sub = header.nextElementSibling;
-  var chev = header.querySelector('.chevron');
-  sub.classList.toggle('open');
-  chev.classList.toggle('open');
-}
+        .chart-box h3 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 14px;
+        }
 
-function showPanel(name) {
-  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  document.getElementById('panel-' + name).classList.add('active');
-  event.target.classList.add('active');
-}
+        /* ─── SECTION TITLE ─── */
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-var isDark = matchMedia('(prefers-color-scheme: dark)').matches;
-var textColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)';
-var gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
 
-new Chart(document.getElementById('freqChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Marketing','Inflation','Unemployment','ECB','GDP','Fiscal','PED','Hexagon'],
-    datasets: [{
-      label: 'Papers',
-      data: [13, 12, 10, 9, 8, 8, 5, 7],
-      backgroundColor: ['#3266ad','#E24B4A','#BA7517','#1D9E75','#7F77DD','#D85A30','#0F6E56','#993556'],
-      borderRadius: 4,
-      borderWidth: 0
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { ticks: { color: textColor, font: { size: 11 }, autoSkip: false, maxRotation: 30 }, grid: { color: gridColor } },
-      y: { ticks: { color: textColor, font: { size: 11 } }, grid: { color: gridColor }, min: 0, max: 15 }
-    }
-  }
-});
+        /* ─── TOPIC CARD ─── */
+        .topic-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: box-shadow 0.15s ease;
+        }
 
-new Chart(document.getElementById('splitChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Macro/VWL (Eng)', 'Marketing (Eng)', 'Business admin (DE)'],
-    datasets: [{
-      data: [40, 35, 25],
-      backgroundColor: ['#3266ad', '#1D9E75', '#BA7517'],
-      borderWidth: 0
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: function(c) { return c.label + ': ' + c.parsed + '%'; } } }
-    }
-  }
-});
-</script>
+        .topic-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .topic-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 14px 18px;
+            gap: 12px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .topic-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .topic-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .freq {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .bar-wrap {
+            width: 72px;
+            height: 5px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 480px) {
+            .bar-wrap {
+                display: none;
+            }
+
+            .topic-header {
+                padding: 12px 14px;
+            }
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .bar-high {
+            background: var(--bar-red);
+        }
+
+        .bar-med {
+            background: var(--bar-amber);
+        }
+
+        .bar-low {
+            background: var(--bar-green);
+        }
+
+        /* ─── BADGE ─── */
+        .badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 100px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .badge-high {
+            background: var(--badge-red-bg);
+            color: var(--badge-red-text);
+        }
+
+        .badge-med {
+            background: var(--badge-amber-bg);
+            color: var(--badge-amber-text);
+        }
+
+        .badge-low {
+            background: var(--badge-green-bg);
+            color: var(--badge-green-text);
+        }
+
+        /* ─── CHEVRON ─── */
+        .chevron {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            transition: transform 0.2s ease;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .chevron.open {
+            transform: rotate(180deg);
+        }
+
+        /* ─── SUBTOPICS ─── */
+        .subtopics {
+            display: none;
+            border-top: 1px solid var(--border-light);
+            background: var(--surface-2);
+        }
+
+        .subtopics.open {
+            display: block;
+        }
+
+        .sub-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 18px;
+            border-bottom: 1px solid var(--border-light);
+            gap: 12px;
+        }
+
+        .sub-row:last-child {
+            border-bottom: none;
+        }
+
+        .sub-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .sub-freq {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            font-weight: 500;
+            background: var(--border);
+            padding: 2px 8px;
+            border-radius: 100px;
+            flex-shrink: 0;
+        }
+
+        /* ─── INSIGHT BOX ─── */
+        .insight-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            margin-top: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .insight-box h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 12px;
+        }
+
+        .insight-item {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            gap: 10px;
+        }
+
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+
+        .insight-dot {
+            color: var(--text-tertiary);
+            font-size: 16px;
+            line-height: 1.5;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-eyebrow">Past paper analysis · FOS Hessen</div>
+            <h1>What actually comes up in your Wirtschaft exam</h1>
+            <p>Fachoberschule Wirtschaft bilingual (HMKB / Hessen) — 18 past papers reviewed, 2017 to 2025</p>
+        </div>
+
+        <!-- METRICS -->
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-label">Papers reviewed</div>
+                <div class="metric-value">18</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Years covered</div>
+                <div class="metric-value">2017–25</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Topics identified</div>
+                <div class="metric-value">24</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">High-priority topics</div>
+                <div class="metric-value">8</div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab active" onclick="showPanel('all', this)">All topics</button>
+            <button class="tab" onclick="showPanel('eng', this)">English section (VWL)</button>
+            <button class="tab" onclick="showPanel('mkt', this)">Marketing</button>
+            <button class="tab" onclick="showPanel('de', this)">German section</button>
+        </div>
+
+        <!-- ══════════ ALL TOPICS ══════════ -->
+        <div id="panel-all" class="panel active">
+
+            <div class="chart-row">
+                <div class="chart-box">
+                    <h3>Topic frequency — all years</h3>
+                    <div style="position:relative;height:220px;">
+                        <canvas id="freqChart" role="img"
+                            aria-label="Bar chart of topic frequency across all exam papers"></canvas>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h3>Exam section split</h3>
+                    <div style="position:relative;height:180px;">
+                        <canvas id="splitChart" role="img"
+                            aria-label="Doughnut chart showing exam section distribution"></canvas>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:5px;margin-top:12px;">
+                        <div
+                            style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);">
+                            <span
+                                style="width:10px;height:10px;border-radius:50%;background:#3266ad;flex-shrink:0;display:inline-block;"></span>Macro
+                            / VWL (English) — 40%
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);">
+                            <span
+                                style="width:10px;height:10px;border-radius:50%;background:#1D9E75;flex-shrink:0;display:inline-block;"></span>Marketing
+                            (English) — 35%
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);">
+                            <span
+                                style="width:10px;height:10px;border-radius:50%;background:#BA7517;flex-shrink:0;display:inline-block;"></span>Business
+                            admin (German) — 25%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">All topics — ranked by importance</div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Marketing mix &amp; strategy <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">13 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:100%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">4 Ps / marketing mix concept</span><span
+                            class="sub-freq">9 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">BCG portfolio matrix</span><span class="sub-freq">7
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">ANSOFF growth matrix</span><span class="sub-freq">6
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Market segmentation</span><span class="sub-freq">6
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Branding strategy</span><span class="sub-freq">5
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Market research (primary vs secondary)</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">SWOT / PESTLE analysis</span><span class="sub-freq">4
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Porter's competitive strategies</span><span
+                            class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Above-the-line / below-the-line promotion</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Product life cycle (PLC)</span><span class="sub-freq">3
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Price differentiation strategies</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Distribution channels</span><span class="sub-freq">3
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">USP / unique selling proposition</span><span
+                            class="sub-freq">2 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Inflation &amp; price stability <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">12 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:92%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Definition &amp; types of inflation</span><span
+                            class="sub-freq">9 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Consequences for debtors, creditors,
+                            consumers</span><span class="sub-freq">7 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">CPI / HCPI / inflation measurement</span><span
+                            class="sub-freq">6 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Causes of inflation (energy, supply chain)</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Deflation &amp; its effects</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Wage-price spiral / purchasing power</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Unemployment <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">10 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:77%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Types &amp; causes of unemployment</span><span
+                            class="sub-freq">6 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Government measures to fight unemployment</span><span
+                            class="sub-freq">7 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Unemployment rate calculation</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Costs of unemployment (economic + social)</span><span
+                            class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Kurzarbeit / short-time work schemes</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Comparing countries (Germany vs US)</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> ECB &amp; monetary policy <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">9 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:69%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Interest rate policy (raising/lowering)</span><span
+                            class="sub-freq">7 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">ECB tasks &amp; role</span><span class="sub-freq">6
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Monetary policy → price stability mechanism</span><span
+                            class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Consequences of low interest rates</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Quantitative easing / bond purchases</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> GDP &amp; economic growth <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">8 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:62%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">GDP definition &amp; calculation</span><span
+                            class="sub-freq">6 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">GDP as welfare measure — limitations</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Nominal vs real GDP</span><span class="sub-freq">3
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Human Development Index (HDI)</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Lorenz curve &amp; income distribution</span><span
+                            class="sub-freq">2 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Fiscal policy <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">8 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:62%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Demand-oriented fiscal policy (Keynesian)</span><span
+                            class="sub-freq">6 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Fiscal policy instruments (tax, spending)</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Supply-oriented fiscal policy</span><span
+                            class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Deficit spending &amp; debt</span><span
+                            class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Limits &amp; critique of fiscal policy</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Magic hexagon / economic goals <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">7 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:54%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Goal conflicts (e.g. growth vs environment)</span><span
+                            class="sub-freq">6 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Naming the 6 goals</span><span class="sub-freq">5
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Goal harmonies</span><span class="sub-freq">4
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Target values for each goal</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Price elasticity of demand <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">5 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:38%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">PED formula &amp; calculation</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Interpretation of PED result</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Factors determining PED</span><span class="sub-freq">3
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Elastic vs inelastic goods (examples)</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Causal chains (Wirkungsketten) <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">8 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:62%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">4-step causal chain on Keynesian demand</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Oil price effects</span><span class="sub-freq">3
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Tax change effects on economy</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Interest rate → growth chain</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Deflation spiral</span><span class="sub-freq">2
+                            papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Procurement &amp; stock management <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">5 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:38%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Optimal order quantity (Andler formula)</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Order point procedure (Bestellpunkt)</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Storage costs, stock levels, reorder point</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Order rhythm procedure (Bestellrhythmus)</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Just-in-time procurement</span><span class="sub-freq">2
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Make-or-buy decisions</span><span class="sub-freq">2
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">ABC analysis</span><span class="sub-freq">1 paper</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Bookkeeping &amp; accounting <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">5 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:38%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Journal entries (Grundbuch)</span><span
+                            class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Depreciation (linear, time-based,
+                            usage-based)</span><span class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Acquisition cost (Anschaffungskosten)</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">VAT / Umsatzsteuer entries</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Inventory changes (Bestandsveränderungen)</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Private withdrawals (Privatentnahmen)</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Returns &amp; purchase discounts</span><span
+                            class="sub-freq">2 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Business financing <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">5 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:38%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Loan types (annuity, maturity, instalment)</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Equity vs debt financing</span><span class="sub-freq">2
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Balance sheet analysis</span><span class="sub-freq">2
+                            papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Oil prices &amp; commodity markets <span
+                            class="badge badge-low">Lower</span></div>
+                    <div class="topic-meta"><span class="freq">3 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-low" style="width:23%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Effects on importing vs exporting countries</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Supply &amp; demand in oil markets</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Link to unemployment &amp; growth</span><span
+                            class="sub-freq">2 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Income distribution &amp; justice <span
+                            class="badge badge-low">Lower</span></div>
+                    <div class="topic-meta"><span class="freq">2 / 18 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-low" style="width:15%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Lorenz curve interpretation</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Redistribution measures</span><span class="sub-freq">2
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Progressive taxation</span><span class="sub-freq">1
+                            paper</span></div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <h3>Key insights &amp; exam tips</h3>
+                <div class="insight-item"><span class="insight-dot">▸</span><span>Marketing is the single most tested
+                        area — every paper with a marketing focus (roughly half of all papers) tests BCG matrix, ANSOFF,
+                        or market segmentation. Expect at least one of these.</span></div>
+                <div class="insight-item"><span class="insight-dot">▸</span><span>Inflation + ECB is essentially
+                        guaranteed every year in the macroeconomics section. Know CPI, causes, consequences, and the
+                        ECB's 3-step transmission mechanism cold.</span></div>
+                <div class="insight-item"><span class="insight-dot">▸</span><span>Causal chains appear in almost every
+                        macro paper — practice writing them fluently in 4 steps with arrows.</span></div>
+                <div class="insight-item"><span class="insight-dot">▸</span><span>The magic hexagon replaced the "magic
+                        square" from 2022 onward — always use the 6-goal version (adding environmental protection and
+                        fair distribution).</span></div>
+                <div class="insight-item"><span class="insight-dot">▸</span><span>Since 2024, the German section
+                        reliably covers procurement (Beschaffung) and bookkeeping — expect the Andler formula and
+                        depreciation calculations.</span></div>
+                <div class="insight-item"><span class="insight-dot">▸</span><span>Price elasticity appears every year it
+                        is in the English section. Always calculate AND interpret the result — both parts are
+                        marked.</span></div>
+            </div>
+        </div>
+
+        <!-- ══════════ ENGLISH / VWL ══════════ -->
+        <div id="panel-eng" class="panel">
+            <div class="section-title">English section — VWL / macroeconomics</div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Inflation / price stability <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">12 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:100%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Definition, types, causes</span><span class="sub-freq">9
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Consequences for economic actors</span><span
+                            class="sub-freq">8 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Measurement (CPI / HCPI calculations)</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Deflation concept &amp; causal chain</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> ECB &amp; monetary policy <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">9 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:75%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">ECB tasks (price stability, key rate)</span><span
+                            class="sub-freq">6 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Consequences of low / high interest rates</span><span
+                            class="sub-freq">7 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Monetary transmission mechanism</span><span
+                            class="sub-freq">4 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Unemployment <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">9 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:75%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Measures against unemployment</span><span
+                            class="sub-freq">7 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Rate calculation + critique</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Types &amp; causes</span><span class="sub-freq">5
+                            papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Magic hexagon <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">7 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:58%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Conflicts and harmonies</span><span class="sub-freq">6
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Naming all 6 goals</span><span class="sub-freq">5
+                            papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> GDP &amp; welfare measurement <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">7 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:58%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">GDP definition &amp; limits</span><span
+                            class="sub-freq">6 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">HDI / alternative measures</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Fiscal policy <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">7 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:58%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Demand-oriented Keynesian policy</span><span
+                            class="sub-freq">6 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Supply-side policy</span><span class="sub-freq">3
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Limits of fiscal policy</span><span class="sub-freq">3
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Deficit spending</span><span class="sub-freq">3
+                            papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Price elasticity of demand <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">5 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:42%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Calculation</span><span class="sub-freq">5 papers</span>
+                    </div>
+                    <div class="sub-row"><span class="sub-name">Interpretation &amp; illustration</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Determinants of PED</span><span class="sub-freq">3
+                            papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Income &amp; wealth distribution <span
+                            class="badge badge-low">Lower</span></div>
+                    <div class="topic-meta"><span class="freq">2 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-low" style="width:17%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Lorenz curve concept &amp; reading</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Redistribution measures</span><span class="sub-freq">2
+                            papers</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════ MARKETING ══════════ -->
+        <div id="panel-mkt" class="panel">
+            <div class="section-title">Marketing section — English</div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Marketing mix (4 Ps) <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">9 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:100%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Apply to a given company from text</span><span
+                            class="sub-freq">8 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Explain the 4 Ps concept</span><span class="sub-freq">7
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Pricing strategies (skimming, penetration)</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Promotion policy (ATL / BTL)</span><span
+                            class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Distribution channels (direct, indirect,
+                            online)</span><span class="sub-freq">4 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> BCG portfolio matrix <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">7 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:78%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Classify product from text (star / dog /
+                            etc.)</span><span class="sub-freq">7 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Sketch &amp; label the matrix</span><span
+                            class="sub-freq">6 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Weaknesses of the model</span><span class="sub-freq">4
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Relative market share calculation</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> ANSOFF matrix <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">6 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:67%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Describe all 4 strategies</span><span class="sub-freq">5
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Suggest strategy for a given firm</span><span
+                            class="sub-freq">5 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Market segmentation <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">6 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:67%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Illustrate the concept</span><span class="sub-freq">5
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Apply to given case</span><span class="sub-freq">5
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Types of segmentation (demographic,
+                            psychographic…)</span><span class="sub-freq">4 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Market research <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">6 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:67%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Primary vs secondary research (contrast)</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Advantages &amp; disadvantages of each</span><span
+                            class="sub-freq">5 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Qualitative vs quantitative research</span><span
+                            class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Suggest method for given scenario</span><span
+                            class="sub-freq">4 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Branding <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">5 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:56%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Purpose of branding</span><span class="sub-freq">4
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Advantage / disadvantage of strategy</span><span
+                            class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Multi-brand strategy</span><span class="sub-freq">3
+                            papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Porter's competitive strategies <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">4 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:44%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Describe 3 strategies (cost leadership, differentiation,
+                            focus)</span><span class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Identify strategy used in text</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Product life cycle <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">3 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:33%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Chart turnover &amp; identify PLC stage</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Weaknesses of PLC model</span><span class="sub-freq">2
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Measures to extend PLC</span><span class="sub-freq">2
+                            papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> SWOT / PESTLE analysis <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">3 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:33%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">SWOT findings from a text</span><span class="sub-freq">3
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">PESTLE factor examples</span><span class="sub-freq">2
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Strategy from SWOT results</span><span
+                            class="sub-freq">2 papers</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════ GERMAN SECTION ══════════ -->
+        <div id="panel-de" class="panel">
+            <div class="section-title">German section — Buchführung &amp; Beschaffung</div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Depreciation (Abschreibungen) <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">4 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:100%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Linear (zeitanteilig) depreciation
+                            calculation</span><span class="sub-freq">4 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Usage-based (leistungsbezogen) depreciation</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Acquisition cost (Anschaffungskosten)
+                            determination</span><span class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Journal entries for depreciation</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Procurement (Beschaffung) <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">4 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:100%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Optimal order quantity (Andler formula)</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Order point procedure — calculations</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Order rhythm procedure</span><span class="sub-freq">2
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Supplier selection (qualitativer
+                            Angebotsvergleich)</span><span class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Just-in-time evaluation</span><span class="sub-freq">2
+                            papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> VAT / Umsatzsteuer bookings <span
+                            class="badge badge-high">High</span></div>
+                    <div class="topic-meta"><span class="freq">3 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-high" style="width:75%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Zahllast vs Vorsteuerüberhang</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Journal entries for VAT settlement</span><span
+                            class="sub-freq">3 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Gross invoice calculations</span><span
+                            class="sub-freq">3 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Inventory changes (Bestandsveränderungen)
+                        <span class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">3 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:75%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Calculate change in EUR and book it</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Effect on profit &amp; loss (GuV)</span><span
+                            class="sub-freq">2 papers</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Loan &amp; financing calculations <span
+                            class="badge badge-med">Medium</span></div>
+                    <div class="topic-meta"><span class="freq">3 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-med" style="width:75%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Fälligkeitsdarlehen table</span><span class="sub-freq">2
+                            papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Wage cost tables (Lohnkostenarten)</span><span
+                            class="sub-freq">2 papers</span></div>
+                    <div class="sub-row"><span class="sub-name">Annuity loan calculations</span><span class="sub-freq">1
+                            paper</span></div>
+                </div>
+            </div>
+
+            <div class="topic-card">
+                <div class="topic-header" onclick="toggle(this)">
+                    <div class="topic-name"><span class="chevron">▾</span> Private withdrawals / owner entries <span
+                            class="badge badge-low">Lower</span></div>
+                    <div class="topic-meta"><span class="freq">2 papers</span>
+                        <div class="bar-wrap">
+                            <div class="bar-fill bar-low" style="width:50%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="subtopics">
+                    <div class="sub-row"><span class="sub-name">Book Privatentnahme (goods or cash)</span><span
+                            class="sub-freq">2 papers</span></div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end page-wrapper -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <script>
+        function toggle(header) {
+            var sub = header.nextElementSibling;
+            var chev = header.querySelector('.chevron');
+            sub.classList.toggle('open');
+            chev.classList.toggle('open');
+        }
+
+        function showPanel(name, btn) {
+            document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+            document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+            document.getElementById('panel-' + name).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        var isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+        var textColor = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)';
+        var gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)';
+
+        new Chart(document.getElementById('freqChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Marketing', 'Inflation', 'Unemployment', 'ECB', 'GDP', 'Fiscal', 'Hexagon', 'PED'],
+                datasets: [{
+                    label: 'Papers',
+                    data: [13, 12, 10, 9, 8, 8, 7, 5],
+                    backgroundColor: ['#3266ad', '#E24B4A', '#BA7517', '#1D9E75', '#7F77DD', '#D85A30', '#993556', '#0F6E56'],
+                    borderRadius: 5,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        ticks: { color: textColor, font: { size: 10, family: 'Inter' }, autoSkip: false, maxRotation: 35 },
+                        grid: { color: gridColor }
+                    },
+                    y: {
+                        ticks: { color: textColor, font: { size: 10, family: 'Inter' }, stepSize: 3 },
+                        grid: { color: gridColor },
+                        min: 0, max: 15
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('splitChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Macro / VWL (English)', 'Marketing (English)', 'Business admin (German)'],
+                datasets: [{
+                    data: [40, 35, 25],
+                    backgroundColor: ['#3266ad', '#1D9E75', '#BA7517'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: function (c) { return ' ' + c.label + ': ' + c.parsed + '%'; } } }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
